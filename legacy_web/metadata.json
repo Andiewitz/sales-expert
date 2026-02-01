@@ -1,0 +1,5 @@
+{
+  "name": "Sales Expert",
+  "description": "High-performance offline-first sales dashboard using SQLite and React.",
+  "requestFramePermissions": []
+}
