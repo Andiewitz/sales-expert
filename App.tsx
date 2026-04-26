@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
-import { View, Text, ActivityIndicator, Alert, StatusBar, Dimensions, Animated, LayoutAnimation, Platform, UIManager, Linking, Image } from 'react-native';
+import { View, Text, Alert, StatusBar, Animated, LayoutAnimation, Linking, Image } from 'react-native';
 import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -25,45 +25,8 @@ const Tab = createBottomTabNavigator();
 
 export default function App() {
     const [isDbReady, setIsDbReady] = useState(false);
-    const [isAppReady, setIsAppReady] = useState(false);
     const [isLoadingData, setIsLoadingData] = useState(true);
 
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const splashFade = useRef(new Animated.Value(1)).current;
-    const logoScale = useRef(new Animated.Value(0.8)).current;
-    const contentScale = useRef(new Animated.Value(0.98)).current;
-    const translateY = useRef(new Animated.Value(10)).current;
-
-    useEffect(() => {
-        if (isAppReady && isDbReady) {
-            Animated.parallel([
-                Animated.timing(splashFade, {
-                    toValue: 0,
-                    duration: 600,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(fadeAnim, {
-                    toValue: 1,
-                    duration: 800,
-                    delay: 200,
-                    useNativeDriver: true,
-                }),
-                Animated.spring(contentScale, {
-                    toValue: 1,
-                    friction: 8,
-                    tension: 40,
-                    delay: 200,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(translateY, {
-                    toValue: 0,
-                    duration: 800,
-                    delay: 200,
-                    useNativeDriver: true,
-                })
-            ]).start();
-        }
-    }, [isAppReady, isDbReady]);
     const [sales, setSales] = useState<Sale[]>([]);
     const [leads, setLeads] = useState<Lead[]>([]);
     const [leadStats, setLeadStats] = useState({ total: 0, won: 0, lost: 0, active: 0, pipelineValue: 0, conversionRate: 0 });
@@ -91,28 +54,6 @@ export default function App() {
         };
         init();
 
-        // Premium Logo Animation Loop
-        Animated.loop(
-            Animated.sequence([
-                Animated.timing(logoScale, {
-                    toValue: 1,
-                    duration: 1500,
-                    useNativeDriver: true,
-                }),
-                Animated.timing(logoScale, {
-                    toValue: 0.8,
-                    duration: 1500,
-                    useNativeDriver: true,
-                })
-            ])
-        ).start();
-
-        // Artificial delay for splash feel
-        const timer = setTimeout(() => {
-            setIsAppReady(true);
-        }, 2500);
-
-        return () => clearTimeout(timer);
     }, []);
 
     const refreshData = async () => {
@@ -281,23 +222,15 @@ export default function App() {
         };
     }, [sales]);
 
-    if (!isDbReady || !isAppReady) {
+    if (!isDbReady) {
         return (
             <View className="flex-1 bg-black items-center justify-center">
                 <StatusBar hidden />
-                <Animated.View style={{ opacity: splashFade, transform: [{ scale: logoScale }] }}>
-                    <Image
-                        source={require('./assets/476482802_1030999202195582_7347365316891957894_n.png')}
-                        style={{ width: 220, height: 100 }}
-                        resizeMode="contain"
-                    />
-                </Animated.View>
-                {!isDbReady && (
-                    <View className="absolute bottom-20">
-                        <ActivityIndicator size="small" color="#FFC107" />
-                        <Text className="text-brand-gold text-[8px] font-black uppercase tracking-widest mt-2 text-center">Initializing Vault</Text>
-                    </View>
-                )}
+                <Image
+                    source={require('./assets/476482802_1030999202195582_7347365316891957894_n.png')}
+                    style={{ width: 220, height: 100 }}
+                    resizeMode="contain"
+                />
             </View>
         );
     }
@@ -326,16 +259,7 @@ export default function App() {
 
     return (
         <SafeAreaProvider style={{ backgroundColor: '#000000' }}>
-            <Animated.View
-                className="flex-1 bg-black"
-                style={{
-                    opacity: fadeAnim,
-                    transform: [
-                        { scale: contentScale },
-                        { translateY: translateY }
-                    ]
-                }}
-            >
+            <View className="flex-1 bg-black">
                 <StatusBar barStyle="light-content" backgroundColor="#000000" />
                 <NavigationContainer theme={DarkTheme}>
                     <Tab.Navigator
@@ -512,7 +436,7 @@ export default function App() {
                 />
 
                 <Toast />
-            </Animated.View>
+            </View>
         </SafeAreaProvider>
     );
 }
