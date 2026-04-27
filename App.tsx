@@ -18,9 +18,10 @@ import { LeadContextMenu } from './components/LeadContextMenu';
 import { EditLeadModal } from './components/EditLeadModal';
 import { SettingsModal } from './components/SettingsModal';
 import { CalendarModal } from './components/CalendarModal';
+import { TamaguiProvider } from 'tamagui';
+import tamaguiConfig from './tamagui.config';
 import { Sale, Lead, DashboardStats } from './types';
 import { Home, Plus, Users, DollarSign, Settings as SettingsIcon, Wrench } from 'lucide-react-native';
-
 const Tab = createBottomTabNavigator();
 
 export default function App() {
@@ -258,9 +259,10 @@ export default function App() {
     const activeIconColor = '#FFC107';
 
     return (
-        <SafeAreaProvider style={{ backgroundColor: '#000000' }}>
-            <View className="flex-1 bg-black">
-                <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <TamaguiProvider config={tamaguiConfig}>
+            <SafeAreaProvider style={{ backgroundColor: '#000000' }}>
+                <View className="flex-1 bg-black">
+                    <StatusBar barStyle="light-content" backgroundColor="#000000" />
                 <NavigationContainer theme={DarkTheme}>
                     <Tab.Navigator
                         screenOptions={{
@@ -438,5 +440,6 @@ export default function App() {
                 <Toast />
             </View>
         </SafeAreaProvider>
+        </TamaguiProvider>
     );
 }
