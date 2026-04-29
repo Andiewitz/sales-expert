@@ -259,7 +259,7 @@ export default function App() {
     const activeIconColor = '#FFC107';
 
     return (
-        <TamaguiProvider config={tamaguiConfig}>
+        <TamaguiProvider config={tamaguiConfig} defaultTheme="dark">
             <SafeAreaProvider style={{ backgroundColor: '#000000' }}>
                 <View className="flex-1 bg-black">
                     <StatusBar barStyle="light-content" backgroundColor="#000000" />

@@ -1,8 +1,9 @@
 import React, { useMemo, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, Dimensions, TouchableOpacity, Image, Animated } from 'react-native';
+import { Dimensions, Animated, TouchableOpacity, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import { TrendingUp, Activity, DollarSign, Users, ChevronRight, MessageSquare, Send, Sparkles } from 'lucide-react-native';
+import { TrendingUp, Activity, Users, ChevronRight, MessageSquare } from 'lucide-react-native';
+import { YStack, XStack, Text, ScrollView, Card, Circle, View as TamaguiView } from 'tamagui';
 import { Sale, Lead, DashboardStats } from '../types';
 import { Header } from './Header';
 import { DashboardSkeleton } from './Skeleton';
@@ -23,14 +24,6 @@ interface DashboardProps {
 export function Dashboard({ stats, leads, onViewAll, onCustomerPress, onOpenChat, onSettingsPress, onCalendarPress, isLoading }: DashboardProps) {
     const fadeAnim = useRef(new Animated.Value(0)).current;
     const slideAnim = useRef(new Animated.Value(50)).current;
-
-    const activeLeadsCount = useMemo(() =>
-        leads.filter(l => l.status === 'Cold' || l.status === 'Warm' || l.status === 'Hot').length
-        , [leads]);
-
-    const wonLeadsCount = useMemo(() =>
-        leads.filter(l => l.status === 'Won').length
-        , [leads]);
 
     const leadsThisWeek = useMemo(() => {
         const now = new Date();
@@ -72,7 +65,6 @@ export function Dashboard({ stats, leads, onViewAll, onCustomerPress, onOpenChat
         }).format(amount);
     };
 
-    // Lead Trend Data Preparation
     const leadChartData = useMemo(() => {
         if (!leads || leads.length === 0) {
             return {
@@ -107,36 +99,36 @@ export function Dashboard({ stats, leads, onViewAll, onCustomerPress, onOpenChat
             labels: last6Months.map(m => m.label),
             datasets: [{
                 data: last6Months.map(m => m.count),
-                color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`, // Professional Blue
+                color: (opacity = 1) => `rgba(59, 130, 246, ${opacity})`,
                 strokeWidth: 3
             }]
         };
     }, [leads]);
 
     return (
-        <SafeAreaView className="flex-1 bg-brand-black" edges={['top']}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#000' }} edges={['top']}>
             <Header onSettingsPress={onSettingsPress} onCalendarPress={onCalendarPress} />
 
             {isLoading ? (
                 <DashboardSkeleton />
             ) : (
-                <ScrollView className="flex-1 px-4 pt-2" showsVerticalScrollIndicator={false}>
+                <ScrollView f={1} px="$4" pt="$2" showsVerticalScrollIndicator={false}>
                     <Animated.View style={{ opacity: fadeAnim, transform: [{ translateY: slideAnim }] }}>
+                        
                         {/* Hero Card */}
-                        <View className="bg-[#121212] rounded-2xl p-5 mb-4 border border-white/5 relative overflow-hidden">
-                            <View className="flex-row justify-between items-start mb-4">
-                                <Text className="text-slate-400 text-sm font-medium">Lead Acquisition</Text>
-                                <View className="px-2 py-1 bg-blue-500/10 rounded-lg flex-row items-center gap-1 border border-blue-500/20">
+                        <Card elevate size="$4" bordered bg="#121212" br="$5" p="$5" mb="$4" borderColor="rgba(255,255,255,0.05)" overflow="hidden">
+                            <XStack jc="space-between" ai="flex-start" mb="$4">
+                                <Text color="$color10" fontSize="$3" fontWeight="500">Lead Acquisition</Text>
+                                <XStack bg="rgba(59, 130, 246, 0.1)" px="$2" py="$1" br="$3" ai="center" gap="$1" borderColor="rgba(59, 130, 246, 0.2)" borderWidth={1}>
                                     <Users size={12} color="#3b82f6" />
-                                    <Text className="text-blue-500 text-[10px] font-bold">Trending</Text>
-                                </View>
-                            </View>
+                                    <Text color="#3b82f6" fontSize="$2" fontWeight="bold">Trending</Text>
+                                </XStack>
+                            </XStack>
 
-                            <Text className="text-3xl font-extrabold text-white mb-4 tracking-tight">
-                                {leads.length} <Text className="text-base font-semibold text-slate-500">Total Leads</Text>
+                            <Text fontSize="$9" fontWeight="900" color="white" mb="$4" letterSpacing={-1}>
+                                {leads.length} <Text fontSize="$5" fontWeight="600" color="$color10">Total Leads</Text>
                             </Text>
 
-                            {/* Miniature Chart */}
                             <LineChart
                                 data={leadChartData}
                                 width={screenWidth - 80}
@@ -159,110 +151,112 @@ export function Dashboard({ stats, leads, onViewAll, onCustomerPress, onOpenChat
                                 withHorizontalLabels={false}
                                 style={{ marginLeft: -20, paddingRight: 0 }}
                             />
-                        </View>
+                        </Card>
 
                         {/* Stats Grid */}
-                        <View className="flex-row gap-3 mb-8">
-                            <View className="flex-1 bg-white/5 p-4 rounded-2xl border border-white/5">
-                                <View className="w-8 h-8 rounded-xl bg-brand-gold/10 items-center justify-center mb-3">
+                        <XStack gap="$3" mb="$6">
+                            <Card f={1} bg="rgba(255,255,255,0.05)" p="$4" br="$5" bordered borderColor="rgba(255,255,255,0.05)">
+                                <Circle size="$4" bg="rgba(255, 193, 7, 0.1)" mb="$3">
                                     <TrendingUp size={16} color="#FFC107" />
-                                </View>
-                                <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">New This Week</Text>
-                                <Text className="text-xl font-bold text-white">{leadsThisWeek}</Text>
-                            </View>
-                            <View className="flex-1 bg-white/5 p-4 rounded-2xl border border-white/5">
-                                <View className="w-8 h-8 rounded-xl bg-blue-500/10 items-center justify-center mb-3">
+                                </Circle>
+                                <Text color="$color10" fontSize="$2" fontWeight="bold" textTransform="uppercase" letterSpacing={1} mb="$1">New This Week</Text>
+                                <Text fontSize="$7" fontWeight="bold" color="white">{leadsThisWeek}</Text>
+                            </Card>
+                            <Card f={1} bg="rgba(255,255,255,0.05)" p="$4" br="$5" bordered borderColor="rgba(255,255,255,0.05)">
+                                <Circle size="$4" bg="rgba(59, 130, 246, 0.1)" mb="$3">
                                     <Users size={16} color="#3b82f6" />
-                                </View>
-                                <Text className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">New This Month</Text>
-                                <Text className="text-xl font-bold text-white">{leadsThisMonth}</Text>
-                            </View>
-                        </View>
+                                </Circle>
+                                <Text color="$color10" fontSize="$2" fontWeight="bold" textTransform="uppercase" letterSpacing={1} mb="$1">New This Month</Text>
+                                <Text fontSize="$7" fontWeight="bold" color="white">{leadsThisMonth}</Text>
+                            </Card>
+                        </XStack>
 
-                        <View className="mb-6">
-                            <View className="flex-row items-center justify-between mb-4">
-                                <View className="flex-row items-center gap-2">
+                        <YStack mb="$6">
+                            <XStack ai="center" jc="space-between" mb="$4">
+                                <XStack ai="center" gap="$2">
                                     <Activity size={18} color="#FFC107" />
-                                    <Text className="text-lg font-bold text-white tracking-tight">Recent Deals</Text>
-                                </View>
-                                <TouchableOpacity onPress={onViewAll} className="bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
-                                    <Text className="text-brand-gold text-[10px] font-black uppercase tracking-widest">View History</Text>
+                                    <Text fontSize="$6" fontWeight="bold" color="white" letterSpacing={-0.5}>Recent Deals</Text>
+                                </XStack>
+                                <TouchableOpacity onPress={onViewAll} style={{ backgroundColor: 'rgba(255,255,255,0.05)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+                                    <Text color="#FFC107" fontSize="$1" fontWeight="900" textTransform="uppercase" letterSpacing={1}>View History</Text>
                                 </TouchableOpacity>
-                            </View>
+                            </XStack>
 
-                            <View className="bg-[#121212] rounded-2xl border border-white/5 overflow-hidden">
+                            <Card bg="#121212" br="$5" bordered borderColor="rgba(255,255,255,0.05)" overflow="hidden">
                                 {leads.slice(0, 3).map((lead, idx) => (
                                     <TouchableOpacity
                                         key={lead.id}
                                         onPress={() => onCustomerPress(lead)}
-                                        className={`p-4 flex-row items-center justify-between ${idx !== 2 ? 'border-b border-white/5' : ''}`}
                                         activeOpacity={0.7}
                                     >
-                                        <View className="flex-row items-center gap-3">
-                                            <View className="w-10 h-10 rounded-xl bg-brand-gray items-center justify-center border border-white/5">
-                                                <Text className="text-white font-bold">{lead.name.charAt(0)}</Text>
-                                            </View>
-                                            <View>
-                                                <Text className="text-white font-semibold text-sm">{lead.name}</Text>
-                                                <Text className="text-slate-500 text-[10px] font-medium tracking-wide">Status: {lead.status}</Text>
-                                            </View>
-                                        </View>
-                                        <View className="items-end">
-                                            <Text className="text-brand-gold font-bold text-sm">{formatCurrency(lead.value)}</Text>
-                                            <ChevronRight size={14} color="#475569" />
-                                        </View>
+                                        <XStack p="$4" ai="center" jc="space-between" borderBottomWidth={idx !== 2 ? 1 : 0} borderBottomColor="rgba(255,255,255,0.05)">
+                                            <XStack ai="center" gap="$3">
+                                                <Circle size="$4" bg="#2A2A2A" bordered borderColor="rgba(255,255,255,0.05)">
+                                                    <Text color="white" fontWeight="bold">{lead.name.charAt(0)}</Text>
+                                                </Circle>
+                                                <YStack>
+                                                    <Text color="white" fontWeight="600" fontSize="$4">{lead.name}</Text>
+                                                    <Text color="$color10" fontSize="$2" fontWeight="500" letterSpacing={0.5}>Status: {lead.status}</Text>
+                                                </YStack>
+                                            </XStack>
+                                            <YStack ai="flex-end">
+                                                <Text color="#FFC107" fontWeight="bold" fontSize="$4">{formatCurrency(lead.value)}</Text>
+                                                <ChevronRight size={14} color="#475569" />
+                                            </YStack>
+                                        </XStack>
                                     </TouchableOpacity>
                                 ))}
-                            </View>
-                        </View>
+                            </Card>
+                        </YStack>
 
                         {/* Team Chat Preview */}
-                        <View className="mb-12">
-                            <View className="flex-row items-center justify-between mb-4">
-                                <View className="flex-row items-center gap-2">
+                        <YStack mb="$10">
+                            <XStack ai="center" jc="space-between" mb="$4">
+                                <XStack ai="center" gap="$2">
                                     <Users size={18} color="#FFC107" />
-                                    <Text className="text-lg font-bold text-white tracking-tight">Team Activity</Text>
-                                </View>
-                                <View className="bg-green-500/10 px-2 py-1 rounded-lg flex-row items-center gap-1.5 border border-green-500/20">
-                                    <View className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                                    <Text className="text-green-500 text-[9px] font-black uppercase tracking-widest">12 Live</Text>
-                                </View>
-                            </View>
+                                    <Text fontSize="$6" fontWeight="bold" color="white" letterSpacing={-0.5}>Team Activity</Text>
+                                </XStack>
+                                <XStack bg="rgba(34, 197, 94, 0.1)" px="$2" py="$1" br="$3" ai="center" gap="$2" borderColor="rgba(34, 197, 94, 0.2)" borderWidth={1}>
+                                    <Circle size="$1" bg="#22c55e" />
+                                    <Text color="#22c55e" fontSize="$1" fontWeight="900" textTransform="uppercase" letterSpacing={1}>12 Live</Text>
+                                </XStack>
+                            </XStack>
 
                             <TouchableOpacity
                                 onPress={onOpenChat}
                                 activeOpacity={0.9}
-                                className="bg-[#121212] rounded-2xl border border-white/5 overflow-hidden"
                             >
-                                <View className="p-4 gap-3">
-                                    {/* Mock Recent Messages Preview */}
-                                    <View className="flex-row gap-2.5">
-                                        <View className="w-7 h-7 rounded-lg bg-brand-gray border border-white/10 items-center justify-center overflow-hidden">
-                                            <Image source={{ uri: 'https://i.pravatar.cc/150?u=sarah' }} className="w-full h-full" />
-                                        </View>
-                                        <View className="bg-white/5 p-3 rounded-xl rounded-tl-none border border-white/5 flex-1">
-                                            <Text className="text-slate-200 text-[11px] leading-relaxed">
-                                                <Text className="font-bold text-white">Sarah Jenkins:</Text> Just closed Acme deal! 🚀
-                                            </Text>
-                                        </View>
-                                    </View>
+                                <Card bg="#121212" br="$5" bordered borderColor="rgba(255,255,255,0.05)" overflow="hidden">
+                                    <YStack p="$4" gap="$3">
+                                        <XStack gap="$2.5">
+                                            <TamaguiView w={28} h={28} br="$2" bg="#2A2A2A" borderColor="rgba(255,255,255,0.1)" borderWidth={1} overflow="hidden">
+                                                <Image source={{ uri: 'https://i.pravatar.cc/150?u=sarah' }} style={{ width: '100%', height: '100%' }} />
+                                            </TamaguiView>
+                                            <TamaguiView bg="rgba(255,255,255,0.05)" p="$3" br="$3" borderTopLeftRadius={0} borderColor="rgba(255,255,255,0.05)" borderWidth={1} f={1}>
+                                                <Text color="#E2E8F0" fontSize="$2" lineHeight="$3">
+                                                    <Text fontWeight="bold" color="white">Sarah Jenkins:</Text> Just closed Acme deal! 🚀
+                                                </Text>
+                                            </TamaguiView>
+                                        </XStack>
 
-                                    <View className="flex-row gap-2.5">
-                                        <View className="w-7 h-7 rounded-lg bg-brand-gold items-center justify-center">
-                                            <Text className="text-[9px] font-black">ME</Text>
-                                        </View>
-                                        <View className="bg-brand-gold/5 p-3 rounded-xl rounded-tl-none border border-brand-gold/10 flex-1">
-                                            <Text className="text-brand-gold text-[11px] font-medium leading-relaxed">Amazing work Sarah!</Text>
-                                        </View>
-                                    </View>
-                                </View>
+                                        <XStack gap="$2.5">
+                                            <TamaguiView w={28} h={28} br="$2" bg="#FFC107" ai="center" jc="center">
+                                                <Text fontSize={9} fontWeight="900" color="black">ME</Text>
+                                            </TamaguiView>
+                                            <TamaguiView bg="rgba(255, 193, 7, 0.05)" p="$3" br="$3" borderTopLeftRadius={0} borderColor="rgba(255, 193, 7, 0.1)" borderWidth={1} f={1}>
+                                                <Text color="#FFC107" fontSize="$2" fontWeight="500" lineHeight="$3">Amazing work Sarah!</Text>
+                                            </TamaguiView>
+                                        </XStack>
+                                    </YStack>
 
-                                <View className="py-3 items-center bg-white/5 border-t border-white/5 flex-row justify-center gap-2">
-                                    <MessageSquare size={12} color="#FFC107" />
-                                    <Text className="text-brand-gold text-[10px] font-black uppercase tracking-widest">Open Floor</Text>
-                                </View>
+                                    <XStack py="$3" ai="center" jc="center" bg="rgba(255,255,255,0.05)" borderTopWidth={1} borderTopColor="rgba(255,255,255,0.05)" gap="$2">
+                                        <MessageSquare size={12} color="#FFC107" />
+                                        <Text color="#FFC107" fontSize="$2" fontWeight="900" textTransform="uppercase" letterSpacing={1}>Open Floor</Text>
+                                    </XStack>
+                                </Card>
                             </TouchableOpacity>
-                        </View>
+                        </YStack>
+
                     </Animated.View>
                 </ScrollView>
             )}

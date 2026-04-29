@@ -12,7 +12,8 @@ module.exports = function (api) {
                     logTimings: true,
                     disableExtraction: process.env.NODE_ENV === 'development'
                 }
-            ]
+            ],
+            "react-native-reanimated/plugin"
         ],
     };
 };
