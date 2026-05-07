@@ -42,6 +42,11 @@ class DatabaseService {
         console.log("SQLite DB Initialized (v3) with WAL & Indexes");
     }
 
+    // For testing purposes
+    public __reset(): void {
+        db = null;
+    }
+
     public async getSales(): Promise<Sale[]> {
         if (!db) await this.init();
         if (!db) return [];

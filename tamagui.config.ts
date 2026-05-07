@@ -1,12 +1,12 @@
-import { defaultConfig } from '@tamagui/config/v4';
+import { config } from '@tamagui/config/v3';
 import { createTamagui } from 'tamagui';
 
 // @ts-ignore - type mismatch in tamagui rc versions
-const tamaguiConfig = createTamagui(defaultConfig);
+const tamaguiConfig = createTamagui(config);
 
-export type Conf = typeof tamaguiConfig;
+type AppConfig = typeof config;
 declare module 'tamagui' {
-  interface TamaguiCustomConfig extends Conf {}
+  interface TamaguiCustomConfig extends AppConfig {}
 }
 
 export default tamaguiConfig;
